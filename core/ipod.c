@@ -368,7 +368,8 @@ void pz_ipod_powerdown(void)
 #ifdef IPOD
     pz_uninit();
     printf("\nPowering down.\nPress action to power on.\n");
-    execl("/bin/poweroff", "poweroff", NULL);
+    const char *const cmd[] = {"sh", "-c", "poweroff; sleep 20s", NULL};
+    execv("/bin/sh", (char *const *)cmd); // Sleep to prevent re-entering ZeroLauncher
     
     printf("No poweroff binary available.  Rebooting.\n");
     execl("/bin/reboot", "reboot", NULL);
@@ -382,7 +383,8 @@ void pz_ipod_reboot(void)
 {
 #ifdef IPOD
     pz_uninit();
-    execl("/bin/reboot", "reboot", NULL);
+    const char *const cmd[] = {"sh", "-c", "reboot; sleep 20s", NULL};
+    execv("/bin/sh", (char *const *)cmd); // Sleep to prevent re-entering ZeroLauncher
     exit(0);
 #else
     pz_warning ("I don't think you want me to reboot your desktop...");

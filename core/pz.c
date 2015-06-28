@@ -320,7 +320,7 @@ void pz_set_time_from_file(void)
 	struct stat statbuf;
 
 	/* find the last modified time of the settings file */
-	stat( "/etc/podzilla/podzilla.conf", &statbuf );
+	stat( "/opt/Base/ZeroLauncher/Conf/zerolauncher.conf", &statbuf );
 
 	/* convert timespec to timeval */
 	tv_s.tv_sec  = statbuf.st_mtime;
@@ -333,7 +333,7 @@ void pz_set_time_from_file(void)
 void pz_touch_settings(void) 
 {
 #ifdef IPOD
-	close (open ("/etc/podzilla/podzilla.conf", O_WRONLY));
+	close (open ("/opt/Base/ZeroLauncher/Conf/zerolauncher.conf", O_WRONLY));
 #endif
 }
 
@@ -376,7 +376,7 @@ debug_handler (int sig)
     unsigned long retaddr, off;
     const char *modfile = "Unknown";
     int i;
-    FILE *f = fopen ("podzilla.oops", "w");
+    FILE *f = fopen ("/opt/Base/ZeroLauncher/Misc/zerolauncher.oops", "w");
 
     asm ("mov %0, r11" : "=r" (FP) : );
 
@@ -559,7 +559,7 @@ main(int argc, char **argv)
 #endif
 
 #ifdef IPOD
-#define CONFIG_FILE "/etc/podzilla/podzilla.conf"
+#define CONFIG_FILE "/opt/Base/ZeroLauncher/Conf/zerolauncher.conf"
 #else
 #define CONFIG_FILE "config/podzilla.conf"
 #endif
@@ -622,13 +622,14 @@ main(int argc, char **argv)
 #define SET(x) pz_get_setting(pz_global_config,x)
 	if (!SET(WHEEL_DEBOUNCE))   pz_ipod_set (WHEEL_DEBOUNCE, 10);
 	if (!SET(CONTRAST))         pz_ipod_set (CONTRAST, initialContrast);
-	if (!SET(CLICKER))          pz_ipod_set (CLICKER, 1);
+	if (!SET(CLICKER))          pz_ipod_set (CLICKER, 0);
 	if (!SET(DSPFREQUENCY))     pz_ipod_set (DSPFREQUENCY, 0);
 	if (!SET(SLIDE_TRANSIT))    pz_ipod_set (SLIDE_TRANSIT, 2);
 	if (!SET(BACKLIGHT))        pz_ipod_set (BACKLIGHT, 1);
 	if (!SET(BACKLIGHT_TIMER))  pz_ipod_set (BACKLIGHT_TIMER, 3);
 	if (!SET(COLORSCHEME))
-		pz_set_string_setting (pz_global_config,COLORSCHEME, "mono.cs");
+		pz_set_string_setting (pz_global_config,COLORSCHEME, "moonlight-lite.cs");
+	if (!SET(GROUPED_MENUS))    pz_ipod_set (GROUPED_MENUS, 1);
 	pz_save_config (pz_global_config);
 	pz_ipod_fix_settings (pz_global_config);
 
@@ -641,7 +642,7 @@ main(int argc, char **argv)
 	/* load some fonts */
 	/* NOTE: we should probably do something if these fail! */
 	pz_load_font (&ttk_textfont, "Espy Sans", TEXT_FONT, pz_global_config);
-	pz_load_font (&ttk_menufont, "Chicago",   MENU_FONT, pz_global_config);
+	pz_load_font (&ttk_menufont, "Snap",      MENU_FONT, pz_global_config);
 
 	/* set up the menus and initialize the modules */
 	pz_menu_init();
@@ -649,10 +650,10 @@ main(int argc, char **argv)
 	pz_header_init();
 
 	/* sort the menus */
-	pz_menu_sort ("/Extras/Demos");
-	pz_menu_sort ("/Extras/Games");
-	pz_menu_sort ("/Extras/Utilities");
-	//pz_menu_sort ("/Extras/Applications");
+	pz_menu_sort ("/Emulators");
+	pz_menu_sort ("/Media");
+	pz_menu_sort ("/Tools");
+	pz_menu_sort ("/Zillae");
 	if( pz_get_int_setting( pz_global_config, GROUPED_MENUS )) {
 		pz_menu_sort ("/Extras");
 		pz_menu_sort ("/");

@@ -135,13 +135,13 @@ static int mount_pod (PzModule *mod)
     return 0;
 }
 
-#define MODULE_INF_FILE "Module"
+#define MODULE_INF_FILE "PackInfo"
 static void load_modinf (PzModule *mod) 
 {
     char *buf = malloc (512);
 #ifdef IPOD
-    char *confdir = "/etc/podzilla";
-    char *moddir = "/etc/podzilla/modules";
+    char *confdir = "/sandbox";
+    char *moddir = "/sandbox/packs";
 #else
     char *confdir = malloc( MAXPATHLEN + 10 );
     char *moddir = malloc( MAXPATHLEN + 20 );
@@ -391,7 +391,7 @@ static void do_load (PzModule *mod)
     
     fname = malloc (strlen (mod->mountpt) + strlen (mod->name) + 8);
 #ifdef IPOD
-    sprintf (fname, "%s/%s.mod.o", mod->mountpt, mod->name);
+    sprintf (fname, "%s/%s.zl", mod->mountpt, mod->name);
     mod->handle = uCdl_open (fname);
     free (fname);
     if (!mod->handle) {
@@ -625,7 +625,7 @@ static void updateprogress( TWindow * sliderwin, TWidget * slider,
 void pz_modules_init(char *path) 
 {
 #ifdef IPOD
-#define MODULEDIR "/usr/lib"
+#define MODULEDIR "/opt/Base:/opt/Emulators:/opt/Media:/opt/Tools:/opt/Zillae"
 #else
 #define MODULEDIR "modules"
 #endif

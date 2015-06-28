@@ -36,6 +36,8 @@
 #include <errno.h>
 #include "pz.h"
 
+int MPD_ACTIVE = 0, HAVE_NCURSES = 0;
+
 static void wait_on_sigchld(int signal)
 { wait(NULL); }
 
@@ -52,9 +54,23 @@ void setup_sigchld_handler()
 	sigchld_handler = 1;
 }
 
+int mpd_check()
+{
+	if (MPD_ACTIVE) {
+		int launch = pz_errdialog(_("Launch app?"),
+			_("MPD is active. There may not be enough memory to launch selected app. Do you wish to continue?"),
+			2, 0, _("No"), _("Yes"));
+		return launch;
+	}
+	return 1;
+}
+
 void pz_execv(const char *path, char *const argv[])
 {
 #ifdef IPOD
+	
+	if (mpd_check() == 0) return;
+	
 	static const char *const vcs[] = {"/dev/vc/%d", "/dev/tty%d", 0};
 	int i, tty0_fd, ttyfd, curvt, fd, status, oldvt = 0;
 	struct vt_stat vtstate;
@@ -177,6 +193,30 @@ void pz_exec(const char *file)
 {
 	const char *const argv[] = {"sh", "-c", file, NULL};
 	pz_execv("/bin/sh", (char *const *)argv);
+}
+
+extern FILE *errout;
+extern void pz_touch_settings();
+extern void pz_modules_cleanup();
+
+void pz_execv_kill(const char *path, char *const argv[])
+{
+	if (mpd_check() == 0) return;
+	//ttk_quit(); // Causes freeze on launched app's exit
+	pz_touch_settings();
+	pz_modules_cleanup();
+	fclose (errout);
+	pz_execv(path, argv);
+}
+
+void pz_exec_kill(const char *file)
+{
+	if (mpd_check() == 0) return;
+	//ttk_quit(); // Causes freeze on launched app's exit
+	pz_touch_settings();
+	pz_modules_cleanup();
+	fclose (errout);
+	pz_exec(file);
 }
 
 static TWindow *browser_vt_exec (ttk_menu_item *item)

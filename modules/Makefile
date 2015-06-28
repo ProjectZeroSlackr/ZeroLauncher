@@ -22,6 +22,8 @@ all:
 		cd $$dir; \
 		make -sqf ../../module.mk || echo $$dir >> ../.mods; \
 		make -sf ../../module.mk; \
+		cp Module PackInfo; \
+		rm -f *.o; \
 		cd ..; \
 	done
 	@if find * -name built-in.o | grep -q '/built-in.o'; then \
@@ -54,6 +56,7 @@ clean:
 		cd $$dir; \
 		echo " CLEAN   $$dir"; \
 		make -sf ../../module.mk clean; \
+		rm -f PackInfo; \
 		cd ..; \
 	done
 	@rm -f built-in.o

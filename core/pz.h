@@ -480,6 +480,8 @@ void pz_browser_add_action (int (*pred)(const char *), ttk_menu_item *action); /
 void pz_browser_remove_action (int (*pred)(const char *));
 void pz_exec(const char *file);
 void pz_execv(const char *path, char *const argv[]);
+void pz_exec_kill(const char *file);
+void pz_execv_kill(const char *path, char *const argv[]);
 
 
 /** Text input functions - input.c **/

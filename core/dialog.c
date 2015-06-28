@@ -474,7 +474,7 @@ void pz_message_title (const char *title, const char *text)
 void pz_message (const char *text) 
 {
 #ifdef IPOD
-    FILE *fp = fopen ("msg.inf", "a");
+    FILE *fp = fopen ("/opt/Base/ZeroLauncher/Misc/msg.inf", "a");
     fprintf (fp, "I- %%%p \"%s\" len %ld\n", text, text, strlen (text));
     fclose (fp);
 #endif

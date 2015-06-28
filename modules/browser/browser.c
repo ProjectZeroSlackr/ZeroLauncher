@@ -40,7 +40,7 @@ typedef struct _Entry {
 
 static PzModule *module;
 
-static TWindow *open_directory(const char *filename);
+TWindow *open_directory(const char *filename);
 
 static TWindow *previous_directory(ttk_menu_item *item)
 {
@@ -267,7 +267,7 @@ static TWidget *read_directory(const char *dirname)
 	return ret;
 }
 
-static TWindow *open_directory(const char *filename)
+TWindow *open_directory_title(const char *filename, const char *title)
 {
 	TWindow *ret;
 	TWidget *menu;
@@ -276,16 +276,19 @@ static TWindow *open_directory(const char *filename)
 	lwd = open(".", O_RDONLY);
 
 	chdir(filename);
-	if (pz_get_int_setting(pz_global_config, BROWSER_PATH)) {
-		char wd[MAXPATHLEN], *p;
-		p = getcwd(wd, MAXPATHLEN);
-		while (ttk_text_width(ttk_menufont, p) > ttk_screen->w - 60)
-			memcpy((void *)++p, "...", 3);
-		ret = pz_new_window(p, PZ_WINDOW_NORMAL);
-	}
-	else
-		ret = pz_new_window(_("File Browser"), PZ_WINDOW_NORMAL);
-
+	if (title != NULL) {
+		ret = pz_new_window(_(title), PZ_WINDOW_NORMAL);
+	} else {
+		if (pz_get_int_setting(pz_global_config, BROWSER_PATH)) {
+			char wd[MAXPATHLEN], *p;
+			p = getcwd(wd, MAXPATHLEN);
+			while (ttk_text_width(ttk_menufont, p) > ttk_screen->w - 60)
+				memcpy((void *)++p, "...", 3);
+			ret = pz_new_window(p, PZ_WINDOW_NORMAL);
+		} else {
+			ret = pz_new_window(_("File Browser"), PZ_WINDOW_NORMAL);
+		}
+ 	}
 	menu = read_directory("./");
 	menu->data2 = malloc(sizeof(int));
 	*(int *)menu->data2 = lwd;
@@ -293,6 +296,11 @@ static TWindow *open_directory(const char *filename)
 
 	ret->data = 0x12345678;
 	return pz_finish_window(ret);
+}
+
+TWindow *open_directory(const char *filename)
+{
+	return open_directory_title(filename, NULL);
 }
 
 PzWindow *new_browser_window()
